@@ -10,12 +10,14 @@ import java.awt.Color;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import components.Node;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 import javax.swing.JOptionPane;
+import util.ProcessSim;
 import util.ProcessUtils;
 
 /**
@@ -34,6 +36,13 @@ public class MainFrame extends javax.swing.JFrame {
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         communicationTool = new CommunicationTool(this);
         queryPanel.setNodePanel(nodePanel);
+
+        File openFile = new File("processgraph.json");
+        if (openFile != null) {
+            nodePanel.removeAll();
+            ProcessUtils.fromFile(openFile, nodePanel);
+        }
+        communicationTool.requestProcessOnline();
     }
 
     /**
@@ -63,6 +72,11 @@ public class MainFrame extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("实验测试");
         setFont(new java.awt.Font("宋体", 0, 16)); // NOI18N
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosing(java.awt.event.WindowEvent evt) {
+                formWindowClosing(evt);
+            }
+        });
 
         javax.swing.GroupLayout nodePanelLayout = new javax.swing.GroupLayout(nodePanel);
         nodePanel.setLayout(nodePanelLayout);
@@ -82,6 +96,11 @@ public class MainFrame extends javax.swing.JFrame {
         jTabbedPane1.setFont(new java.awt.Font("宋体", 1, 16)); // NOI18N
         jTabbedPane1.setInheritsPopupMenu(true);
         jTabbedPane1.setPreferredSize(new java.awt.Dimension(100, 400));
+        jTabbedPane1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jTabbedPane1MouseClicked(evt);
+            }
+        });
 
         jPanel1.setFont(new java.awt.Font("sansserif", 1, 16)); // NOI18N
         jPanel1.setLayout(new javax.swing.BoxLayout(jPanel1, javax.swing.BoxLayout.X_AXIS));
@@ -141,20 +160,40 @@ public class MainFrame extends javax.swing.JFrame {
     private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
         // TODO add your handling code here:
         nodePanel.colorResest();
+        integrityPanel.init(nodePanel);
         communicationTool.intStart();
     }//GEN-LAST:event_jMenuItem1ActionPerformed
 
     private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
-        try {
-            // TODO add your handling code here:
-            openNodeStructure();
-            integrityPanel.init(nodePanel);
-            Thread.sleep(1000);
-//            register();
-        } catch (InterruptedException ex) {
-            Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        // TODO add your handling code here:
+        openNodeStructure();
     }//GEN-LAST:event_jMenuItem2ActionPerformed
+
+    private void jTabbedPane1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTabbedPane1MouseClicked
+        // TODO add your handling code here:
+        int indexSelected = jTabbedPane1.getSelectedIndex();
+        switch (indexSelected) {
+            case 0:
+                taRegister.setText("");
+                communicationTool.requestProcessOnline();
+                break;
+            case 1:
+                for (Node node : nodePanel.getNodes()) {
+                    if (!node.getBackground().equals(Color.red)) {
+                        nodePanel.colorResest(node);
+                    }
+                }
+                break;
+            case 2:
+                nodePanel.colorResest();
+                break;
+        }
+    }//GEN-LAST:event_jTabbedPane1MouseClicked
+
+    private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
+        // TODO add your handling code here:
+        communicationTool.sendKill();
+    }//GEN-LAST:event_formWindowClosing
 
     /**
      * @param args the command line arguments
@@ -170,16 +209,22 @@ public class MainFrame extends javax.swing.JFrame {
                 if ("Nimbus".equals(info.getName())) {
                     javax.swing.UIManager.setLookAndFeel(info.getClassName());
                     break;
+
+
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(MainFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(MainFrame.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(MainFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(MainFrame.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(MainFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(MainFrame.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(MainFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(MainFrame.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
 
@@ -221,15 +266,29 @@ public class MainFrame extends javax.swing.JFrame {
 //        ProcessUtils.fromFile(file, nodePanel);
     }
 
-    public void register(int pid) {
+    public void processOnline(Set<ProcessSim> processSims) {
+        Set<Integer> ids = new HashSet<Integer>();
+        for (ProcessSim processSim : processSims) {
+            register(processSim);
+            ids.add(processSim.getId());
+        }
+
+        for (Node n : nodePanel.getNodes()) {
+            if (!ids.contains(n.getId())) {
+                nodePanel.colorResest(n);
+            }
+        }
+    }
+
+    public void register(ProcessSim processSim) {
         //set background color
-        Node node = getNode(pid);
+        Node node = getNode(processSim.getId());
         if (node != null) {
             node.setBackground(Color.green);
             //add register information
-            Calendar cal = Calendar.getInstance();
+//            Calendar cal = Calendar.getInstance();
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            String str = "[" + sdf.format(cal.getTime()) + "]: 过程【" + node.getText() + "】注册成功!" + "\n";
+            String str = "[" + sdf.format(new Date(processSim.getRegTime())) + "]: 过程【" + node.getText() + "】注册成功!" + "\n";
             taRegister.append(str);
         }
     }

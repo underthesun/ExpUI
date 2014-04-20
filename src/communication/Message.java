@@ -24,10 +24,13 @@ public class Message {
     public static String INT_ERROR_UNI = "unq";
     public static String INT_ERROR_CTM = "ctm";
 //    public static String INT_TERMINATION = "intTermination";
+    public static String PROCESS_ONLINE = "proOn";
     
     public static String INT_START = "intStart";
     public static String INT_REPORT = "intReport";
     public static String INT_ECHO = "intEcho";
+    
+    public static String KILL = "kill";
     
     private String type;
     private int id;
@@ -56,4 +59,5 @@ public class Message {
     public void setContent(String content) {
         this.content = content;
     }
+    
 }

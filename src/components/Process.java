@@ -3,8 +3,6 @@
  */
 package components;
 
-import components.DraggableButton;
-import components.ProcessConfDialog;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FontMetrics;

@@ -7,14 +7,9 @@ package util;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
-import com.google.gson.stream.JsonReader;
 import java.awt.Point;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.logging.Level;
@@ -23,10 +18,10 @@ import main.NodePanel;
 import components.Node;
 import components.NodeProcess;
 import java.io.FileInputStream;
-import java.io.FilterInputStream;
+import java.io.FileOutputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
-import java.nio.charset.Charset;
 
 /**
  *
@@ -36,9 +31,9 @@ public class ProcessUtils {
 
     public static void toFile(ArrayList<Node> nodes, ArrayList<NodeProcess> nodeProcesses, File file) {
         try {
-            BufferedWriter bw = null;
+            OutputStreamWriter outputStreamWriter = null;
 
-            bw = new BufferedWriter(new FileWriter(file));
+            outputStreamWriter = new OutputStreamWriter(new FileOutputStream(file));
             Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
             ArrayList<NodeProcessPOJO> nodeProcessPOJO = nodeProcessToPOJO(nodeProcesses);
@@ -46,7 +41,7 @@ public class ProcessUtils {
             ProcessPOJO pojo = new ProcessPOJO();
             pojo.setNodeProcessPOJO(nodeProcessPOJO);
             pojo.setNodePOJO(nodePOJO);
-            gson.toJson(pojo, ProcessPOJO.class, bw);
+            gson.toJson(pojo, ProcessPOJO.class, outputStreamWriter);
         } catch (IOException ex) {
             Logger.getLogger(ProcessUtils.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -109,11 +104,6 @@ public class ProcessUtils {
             ProcessPOJO pojo = gson.fromJson(inputStreamReader, new TypeToken<ProcessPOJO>() {
             }.getType());
 
-
-//            br = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
-//            Gson gson = new Gson();
-//            ProcessPOJO pojo = gson.fromJson(br, new TypeToken<ProcessPOJO>() {
-//            }.getType());
             ArrayList<NodeProcessPOJO> nodeProcessPOJO = pojo.getNodeProcessPOJO();
             ArrayList<NodePOJO> nodePOJO = pojo.getNodePOJO();
 

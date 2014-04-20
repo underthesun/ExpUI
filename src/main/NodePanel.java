@@ -240,6 +240,10 @@ public class NodePanel extends javax.swing.JPanel {
         repaint();
     }
     
+    public void colorResest(Node node){
+        node.setBackground(UIManager.getColor("Button.ground"));
+    }
+    
     public void colorResest() {
         for (NodeProcess np : nodeProcess) {
             np.setBackground(UIManager.getColor("Button.ground"));
