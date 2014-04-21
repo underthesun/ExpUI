@@ -5,7 +5,7 @@
 package communication;
 
 /**
- *
+ * 监控端用到的消息类，字段包括消息类型type,消息发出端标识id，消息内容content. 各项静态字段定义了需要用到各种消息类型
  * @author b1106
  */
 public class Message {

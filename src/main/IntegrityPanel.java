@@ -11,7 +11,7 @@ import javax.swing.JTextArea;
 import javax.swing.border.TitledBorder;
 
 /**
- *
+ * 数据完整性验证面板
  * @author b1106
  */
 public class IntegrityPanel extends javax.swing.JPanel {
@@ -27,6 +27,10 @@ public class IntegrityPanel extends javax.swing.JPanel {
         taResults = new ArrayList<JTextArea>();
     }
 
+    /**
+     * 初始化面板
+     * @param nodePanel 
+     */
     public void init(NodePanel nodePanel) {
         this.nodePanel = nodePanel;
 //        repaint();
@@ -40,6 +44,10 @@ public class IntegrityPanel extends javax.swing.JPanel {
         setTextAreas(strs);
     }
 
+    /**
+     * 根据过程信息设置信息展示面板
+     * @param strs  面板标题
+     */
     public void setTextAreas(String[] strs) {
         int num = strs.length;
         for (int i = 0; i < num; i++) {
@@ -59,6 +67,11 @@ public class IntegrityPanel extends javax.swing.JPanel {
         }
     }
 
+    /**
+     * 添加信息接口
+     * @param index 信息展示面板索引
+     * @param text 信息
+     */
     public void appendResult(int index, String text) {
         taResults.get(index).append(text);
     }

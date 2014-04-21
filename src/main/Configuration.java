@@ -5,7 +5,7 @@
 package main;
 
 /**
- *
+ * 监控端所需的配置类，用以启动时存储配置文件中获取到的配置信息
  * @author b1106
  */
 public class Configuration {

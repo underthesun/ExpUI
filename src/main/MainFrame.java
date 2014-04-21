@@ -21,6 +21,7 @@ import util.ProcessSim;
 import util.ProcessUtils;
 
 /**
+ * 监控端面板类
  *
  * @author b1106
  */
@@ -252,6 +253,9 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JTextArea taRegister;
     // End of variables declaration//GEN-END:variables
 
+    /**
+     * 从文件获取过程图信息
+     */
     public void openNodeStructure() {
         JFileChooser fc = new JFileChooser();
         if (fc.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
@@ -266,6 +270,10 @@ public class MainFrame extends javax.swing.JFrame {
 //        ProcessUtils.fromFile(file, nodePanel);
     }
 
+    /**
+     * 显示在线过程信息
+     * @param processSims 在线过程集合
+     */
     public void processOnline(Set<ProcessSim> processSims) {
         Set<Integer> ids = new HashSet<Integer>();
         for (ProcessSim processSim : processSims) {
@@ -280,6 +288,10 @@ public class MainFrame extends javax.swing.JFrame {
         }
     }
 
+    /**
+     * 显示过程注册信息
+     * @param processSim 过程
+     */
     public void register(ProcessSim processSim) {
         //set background color
         Node node = getNode(processSim.getId());
@@ -293,6 +305,10 @@ public class MainFrame extends javax.swing.JFrame {
         }
     }
 
+    /**
+     * 显示过程心跳信息
+     * @param pid 过程标识
+     */
     public void heartbeat(int pid) {
         Node node = getNode(pid);
         //add heartbeat information
@@ -304,6 +320,14 @@ public class MainFrame extends javax.swing.JFrame {
         }
     }
 
+    /**
+     * 显示完整性验证回馈信息
+     * @param pid 过程标识
+     * @param errType 错误类型
+     * @see Message#INT_ERROR_CTM
+     * @see Message#INT_ERROR_QTY
+     * @see Message#INT_ERROR_UNI
+     */
     public void intReport(int pid, String errType) {
         Node node = getNode(pid);
         if (node != null) {
@@ -320,6 +344,11 @@ public class MainFrame extends javax.swing.JFrame {
         }
     }
 
+    /**
+     * 显示过程回馈的数据信息
+     * @param pid 过程标识
+     * @param data 数据
+     */
     public void intEcho(int pid, String data) {
         integrityPanel.appendResult(getNodeProcessId(pid), data);
     }
@@ -339,6 +368,12 @@ public class MainFrame extends javax.swing.JFrame {
         return getNode(pid).getProID();
     }
 
+    /**
+     * 提示报警信息
+     * @param message 信息内容
+     * @param title 信息标题
+     * @param mesType 信息类型
+     */
     private void showWarning(String message, String title, int mesType) {
         JOptionPane.showOptionDialog(null, message, title, JOptionPane.OK_CANCEL_OPTION, mesType, null, new Object[]{"确定"}, "确定");
     }
